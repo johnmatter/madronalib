@@ -240,7 +240,7 @@ set_target_properties(${target} PROPERTIES
                       POSITION_INDEPENDENT_CODE ON
                       FOLDER "madronalib")
 
-target_include_directories(${target} PRIVATE ${RTAUDIO_HEADERS})
+target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/rtaudio)
 
 
 # choose driver for Rtaudio
@@ -253,7 +253,7 @@ elseif(LINUX_JACK)
     target_link_libraries(${target} PRIVATE jack pthread)
 elseif(LINUX_PULSE)
     target_compile_definitions(${target} PRIVATE __LINUX_PULSE__)
-    target_link_libraries(${target} PRIVATE pulse pthread)
+    target_link_libraries(${target} PRIVATE pulse-simple pulse pthread)
 elseif(LINUX_ASOUND)
     target_compile_definitions(${target} PRIVATE __LINUX_ALSA__)
     target_link_libraries(${target} PRIVATE asound pthread)
@@ -357,6 +357,15 @@ function(make_example EXAMPLE_APP_NAME EXAMPLE_SOURCE_FILE)
 
     target_link_libraries(${EXAMPLE_APP_NAME} PRIVATE madronalib)
 
+    # Link platform audio/midi libraries for examples (needed since madronalib is static)
+    if(LINUX_JACK)
+        target_link_libraries(${EXAMPLE_APP_NAME} PRIVATE jack pthread)
+    elseif(LINUX_PULSE)
+        target_link_libraries(${EXAMPLE_APP_NAME} PRIVATE pulse-simple pulse pthread)
+    elseif(LINUX_ASOUND)
+        target_link_libraries(${EXAMPLE_APP_NAME} PRIVATE asound pthread)
+    endif()
+
     set_target_properties(${EXAMPLE_APP_NAME}
         PROPERTIES
         MACOSX_BUNDLE TRUE
@@ -436,10 +445,9 @@ endif()
 
 if(BUILD_TESTS)
     set(target tests)
-    file(GLOB TEST_SOURCES "tests/*.*")
+    file(GLOB TEST_SOURCES "Tests/*.*")
 
     add_executable(tests ${TEST_SOURCES})
-    set_target_properties(tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
     add_dependencies(tests madronalib)
 
     target_link_libraries(tests madronalib)
