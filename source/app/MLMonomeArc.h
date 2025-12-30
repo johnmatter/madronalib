@@ -23,7 +23,7 @@ class MonomeArc : public MonomeDevice
   static constexpr int kLedsPerRing = 64;
 
   explicit MonomeArc(const MonomeDeviceInfo& info);
-  ~MonomeArc() override = default;
+  ~MonomeArc() override;
 
   // Arc properties
   int getEncoderCount() const { return info_.encoderCount > 0 ? info_.encoderCount : 4; }

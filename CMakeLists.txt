@@ -463,6 +463,7 @@ if(BUILD_EXAMPLES)
 
   # serialosc examples (monome grid/arc)
   make_console_example(grid-example grid-example.cpp serialosc)
+  make_console_example(arc-example arc-example.cpp serialosc)
 endif()
 
 #--------------------------------------------------------------------

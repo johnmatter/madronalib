@@ -12,6 +12,18 @@ MonomeArc::MonomeArc(const MonomeDeviceInfo& info) : MonomeDevice(info)
 {
 }
 
+MonomeArc::~MonomeArc()
+{
+  // Clear all ring LEDs before disconnecting
+  if (isConnected())
+  {
+    for (int i = 0; i < getEncoderCount(); ++i)
+    {
+      ringAll(i, 0);
+    }
+  }
+}
+
 TextFragment MonomeArc::prefixedAddress(const char* suffix) const
 {
   return TextFragment(getPrefix(), TextFragment(suffix));
