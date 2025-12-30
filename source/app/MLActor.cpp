@@ -9,6 +9,14 @@ using namespace ml;
 // Define static member for optional logging callback
 ActorLogCallback Actor::logCallback_{nullptr};
 
+// Singleton ActorRegistry accessor - defined here to ensure single instance
+// across library and executable
+ActorRegistry& ml::getActorRegistry()
+{
+  static ActorRegistry instance;
+  return instance;
+}
+
 Actor* ActorRegistry::getActor(Path actorName) { return actors_[actorName]; }
 
 void ActorRegistry::doRegister(Path actorName, Actor* a)

@@ -129,16 +129,18 @@ class Actor
   void clearMessageQueue() { messageQueue_.clear(); }
 };
 
+// Singleton ActorRegistry accessor - defined in MLActor.cpp to ensure
+// single instance across library and executable
+ActorRegistry& getActorRegistry();
+
 inline void registerActor(Path actorName, Actor* actorToRegister)
 {
-  SharedResourcePointer<ActorRegistry> registry;
-  registry->doRegister(actorName, actorToRegister);
+  getActorRegistry().doRegister(actorName, actorToRegister);
 }
 
 inline void removeActor(Actor* actorToRemove)
 {
-  SharedResourcePointer<ActorRegistry> registry;
-  registry->doRemove(actorToRemove);
+  getActorRegistry().doRemove(actorToRemove);
 }
 
 // send message to an Actor.
@@ -154,8 +156,7 @@ inline void removeActor(Actor* actorToRemove)
 //      transmit serialized message to the receiver's process or host (UDP)
 inline void sendMessageToActor(Path actorName, Message m)
 {
-  SharedResourcePointer<ActorRegistry> registry;
-  if (Actor* pActor = registry->getActor(actorName))
+  if (Actor* pActor = getActorRegistry().getActor(actorName))
   {
     pActor->enqueueMessage(m);
   }

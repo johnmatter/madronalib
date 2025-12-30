@@ -460,6 +460,9 @@ if(BUILD_EXAMPLES)
   # OSC examples (simple console apps)
   make_console_example(osc-listener osc-listener.cpp osc)
   make_console_example(osc-sender osc-sender.cpp osc)
+
+  # serialosc examples (monome grid/arc)
+  make_console_example(grid-example grid-example.cpp serialosc)
 endif()
 
 #--------------------------------------------------------------------
