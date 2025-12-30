@@ -8,6 +8,8 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <csignal>
+#include <atomic>
 
 #include "MLSerialOscService.h"
 #include "MLMonomeGrid.h"
@@ -16,6 +18,14 @@
 #include "MLActor.h"
 
 using namespace ml;
+
+// Signal handling for clean shutdown
+std::atomic<bool> running{true};
+
+void signalHandler(int signal)
+{
+  running = false;
+}
 
 // Simple application Actor that receives grid events
 class GridApp : public Actor
@@ -137,6 +147,10 @@ class GridApp : public Actor
 
 int main(int argc, char* argv[])
 {
+  // Install signal handlers for clean shutdown
+  std::signal(SIGINT, signalHandler);
+  std::signal(SIGTERM, signalHandler);
+
   // Start the global timer system (required for Actor message processing)
   SharedResourcePointer<Timers> timers;
   timers->start(false);  // false = use background thread
@@ -150,10 +164,11 @@ int main(int argc, char* argv[])
   app.setup();
 
   // Keep running until interrupted
-  while (true)
+  while (running)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
+  std::cout << "\nShutting down..." << std::endl;
   return 0;
 }

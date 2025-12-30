@@ -19,7 +19,7 @@ class MonomeGrid : public MonomeDevice
 {
  public:
   explicit MonomeGrid(const MonomeDeviceInfo& info);
-  ~MonomeGrid() override = default;
+  ~MonomeGrid() override;
 
   // Grid dimensions (updated after /sys/size response)
   int getWidth() const { return info_.width > 0 ? info_.width : 16; }

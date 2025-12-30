@@ -13,6 +13,15 @@ MonomeGrid::MonomeGrid(const MonomeDeviceInfo& info)
 {
 }
 
+MonomeGrid::~MonomeGrid()
+{
+  // Clear all LEDs before disconnecting
+  if (isConnected())
+  {
+    ledAll(false);
+  }
+}
+
 TextFragment MonomeGrid::prefixedAddress(const char* suffix) const
 {
   return TextFragment(getPrefix(), TextFragment(suffix));
