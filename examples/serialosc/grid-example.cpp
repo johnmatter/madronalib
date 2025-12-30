@@ -3,7 +3,7 @@
 // Distributed under the MIT license: http://madrona-labs.mit-license.org/
 
 // grid-example.cpp
-// Simple monome grid example - toggles LEDs on button press.
+// Simple monome grid example - cycles LED brightness on button press.
 
 #include <iostream>
 #include <thread>
@@ -108,14 +108,27 @@ class GridApp : public Actor
 
     std::cout << "Key: (" << x << ", " << y << ") " << (state ? "down" : "up") << std::endl;
 
-    // Toggle LED on press
+    // Cycle through 4 brightness levels on press
     if (state == 1)
     {
       auto& service = getSerialOscService();
       if (MonomeGrid* grid = service.getFirstGrid())
       {
         auto& buffer = grid->getLedBuffer();
-        buffer.toggle(x, y);
+
+        // Get current level and cycle to next (0 → 5 → 10 → 15 → 0)
+        int currentLevel = buffer.getLevel(x, y);
+        int nextLevel;
+        if (currentLevel == 0)
+          nextLevel = 5;
+        else if (currentLevel < 8)
+          nextLevel = 10;
+        else if (currentLevel < 13)
+          nextLevel = 15;
+        else
+          nextLevel = 0;
+
+        buffer.setLevel(x, y, nextLevel);
         grid->flushLedBuffer();
       }
     }
@@ -129,7 +142,7 @@ int main(int argc, char* argv[])
   timers->start(false);  // false = use background thread
 
   std::cout << "=== Monome Grid Example ===" << std::endl;
-  std::cout << "Press keys on the grid to toggle LEDs" << std::endl;
+  std::cout << "Press keys on the grid to cycle brightness through 4 levels" << std::endl;
   std::cout << "Press Ctrl+C to exit" << std::endl;
   std::cout << std::endl;
 
